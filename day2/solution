@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+# part 1
+sed -E -e '/(1[3-9]|[2-9][0-9]|[1-9][0-9][0-9]+) red/d' -e '/(1[4-9]|[2-9][0-9]|[1-9][0-9][0-9]+) green/d' -e '/(1[5-9]|[2-9][0-9]|[1-9][0-9][0-9]+) blue/d' day2.txt | awk -F'[ :]' '{print $2}' | paste --serial -d '+' | bc -s
+
+# part 2
+cut -d':' -f2- day2.txt | xargs -I {} sh -c 'echo "$1" | sed -E -e "s/(; |, )/\\n/g" | sort -t" " -k2,2 -k1,1rh | uniq -f1 | cut -d" " -f1 | paste --serial -d"*" | bc -s' _ {} | paste --serial -d"+" | bc -s
+
