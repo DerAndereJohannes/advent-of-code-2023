@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+cat day1.txt | tr -dc "[:digit:]\n" | awk '{print substr($0, 1, 1) "" substr($0, length, length)}' | paste --serial -d "+" | bc -s
+
+sed -e 's/one/o1e/g' -e 's/two/t2o/g' -e 's/three/t3e/g' -e 's/four/f4r/g' -e 's/five/f5e/g' -e 's/six/s6x/g' -e 's/seven/s7n/g' -e 's/eight/e8t/g' -e 's/nine/n9e/g' day1.txt | tr -dc "[:digit:]\n[:blank:]" | awk '{print substr($0, 1, 1) "" substr($0, length, length)}' | paste --serial -d "+" | bc -s
