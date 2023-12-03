@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+file_name="day3.txt"
+# row length
+row_length=$(head -n1 "$file_name" | wc -c)
+
+# part 1
+# number positions
+number_coords=$(grep -nob '[0-9]*' "$file_name" | awk -v rl="$row_length" -F: '{col_num=$2%rl;num_len=length($3);id=$1"-"col_num; for(i=col_num; i<col_num+num_len;i++) print id":"$1":"i":"$3}')
+
+# symbol positions
+symbol_coords=$(grep -nob '[^0-9.]*' "$file_name" | awk -v rl="$row_length" -F: '{col_num=$2%rl;id=$1"-"col_num; for(j=$1-1; j<=$1+1;j++) for(i=col_num-1; i<=col_num+1;i++) print id":"j":"i":"$3}')
+
+# compare
+echo -e "$symbol_coords\n$number_coords" | awk -F: '{ if($NF ~ /[^0-9.]$/) include[$2,$3]; else if (($2,$3) in include) print $0 }' | sort -t":" -k1,1 -u | cut -d":" -f4 | paste --serial -d "+" | bc -s
+
+# part 2
+gear_coords=$(grep -nob '*' "$file_name" | awk -v rl="$row_length" -F: '{col_num=$2%rl;id=$1"-"col_num; for(j=$1-1; j<=$1+1;j++) for(i=col_num-1; i<=col_num+1;i++) print id":"j":"i":"$3}')
+
+echo -e "$gear_coords\n$number_coords" | awk -F: '{ if($NF ~ /[^0-9.]$/) include[$2,$3] = $1; else if (($2,$3) in include) print $0":"include[$2,$3] }' | sort -t":" -k1,1 -u | awk -F: '{key=$5; if (key in counts){counts[key]++;result[key] *= $4;print result[key]} else {counts[key] = 1; result[key]=$4}}' | paste --serial -d "+" | bc -s 
+
