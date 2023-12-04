@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+# part 1
+sed -E -e 's/  / /g' -e 's/ \| /\|/' -e 's/^Card[ ]+[0-9]+: //' day4.txt | awk -F '[:| ]' '{wcols=10; for(i=1;i<=wcols;i++)winners[$i]; for(j=wcols+1;j<=NF;j++)if($j in winners){if(NR in scored) {scored[NR]++;} else {scored[NR]=1;}};delete winners} END {for(val in scored) print 2^(scored[val]-1); }' | paste --serial -d'+' | bc -s
+
+# part 2
+sed -E -e 's/  / /g' -e 's/ \| /\|/' -e 's/^Card[ ]+[0-9]+: //' day4.txt | awk -F '[:| ]' 'BEGIN {for(h=1;h<=206;h++){scored[h] = 1;}}; {wcols=10; linecount=206; for(i=1;i<=wcols;i++){winners[$i];}offset=0;for(j=wcols+1;j<=NF;j++){if($j in winners){offset++;if(NR+offset in scored) {scored[NR+offset] += scored[NR] ;}}};delete winners;} END {for(val in scored) print scored[val]; }' | paste --serial -d'+' | bc -s
