@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+# part 1
+awk '/Time:/ {for(i=1;i<=NF;i++)if($i ~ /[0-9]+/)time[i]=$i} /Distance:/ {for(i=1;i<=NF;i++)if($i ~ /[0-9]+/)distance[i]=$i} END {winners=1;for(r in time){wins=0;for(i=1;i<time[r]/2;i++){if(i*(time[r]-i) > distance[r])wins+=2}winners *= wins}print winners}' day6.txt
+
+# part 2
+sed 's/ //g' day6.txt | awk -F: '/Time:/ {time=$2} /Distance:/ {distance=$2} END {wins=0;for(i=1;i<time/2;i++){if(i*(time-i) > distance)wins+=2}print wins}'
