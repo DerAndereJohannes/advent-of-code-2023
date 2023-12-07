@@ -1,0 +1,24 @@
+#!/usr/bin/env sh
+
+# part 1
+awk '
+BEGIN {converter["T"] = 10; converter["J"] = 11; converter["Q"] = 12; converter["K"] = 13; converter["A"] = 14;}
+function convert_char(inchar){if(inchar ~ /[A-Z]+/){return converter[inchar]} else {return inchar}}
+function get_highest_rank(cardcounts) {if(length(cardcounts) == 1){return 7};if(length(cardcounts) == 2){for(c in cardcounts){if(cardcounts[c] == 1 || cardcounts[c] == 4){return 6;}else{return 5;}}};if(length(cardcounts) == 3){for(c in cardcounts){if(cardcounts[c] == 2){return 3;}}return 4;};if(length(cardcounts) == 4){return 2;} return 1;}
+function get_hand_rank(linenum,hand){delete handcount; split(hand, cards, ""); for(c in cards){handcount[linenum,cards[c]] += 1}; return get_highest_rank(handcount)}
+$1 {split($1, chars, "");hand[NR] = get_hand_rank(NR, $1)" "; for(c in chars){hand[NR] = hand[NR]""convert_char(chars[c])" "}} 
+$2 {winning[NR] = $2}
+END {for(h in hand)print winning[h],hand[h]}' day7.txt | sort -k2n -k3n -k4n -k5n -k6n -k7n | cut -d' ' -f1 | awk 'BEGIN {result=0} {result += $1*NR} END{print result}'
+
+
+# part 2
+awk '
+BEGIN {converter["T"] = 10; converter["J"] = 0; converter["Q"] = 12; converter["K"] = 13; converter["A"] = 14;}
+function convert_char(inchar){if(inchar ~ /[A-Z]+/){return converter[inchar]} else {return inchar}}
+function joker_offset(linenum, cc) {if((linenum,"J") in cc){return cc[linenum,"J"];} return 0;}
+function get_highest_rank(linenum,cardcounts) {joker=joker_offset(linenum, cardcounts);delete cardcounts[linenum,"J"];if(length(cardcounts) == 1 || length(cardcounts) == 0){return 7};if(length(cardcounts) == 2){for(c in cardcounts){if(cardcounts[c] == 1 || cardcounts[c]+joker == 4){return 6;}}return 5;};if(length(cardcounts) == 3){for(c in cardcounts){if(cardcounts[c]+joker == 3){return 4;}}return 3;};if(length(cardcounts) == 4){return 2}; return 1;}
+function get_hand_rank(linenum,hand){delete handcount; split(hand, cards, ""); for(c in cards){handcount[linenum,cards[c]] += 1}; return get_highest_rank(linenum, handcount)}
+$1 {split($1, chars, "");hand[NR] = get_hand_rank(NR, $1)" "; for(c in chars){hand[NR] = hand[NR]""convert_char(chars[c])" "}} 
+$2 {winning[NR] = $2}
+END {for(h in hand)print winning[h],hand[h]}' day7.txt | sort -k2n -k3n -k4n -k5n -k6n -k7n | cut -d' ' -f1 | awk 'BEGIN {result=0} {result += $1*NR} END{print result}'
+
