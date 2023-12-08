@@ -1,0 +1,37 @@
+#!/usr/bin/env sh
+
+# part 1
+sed -e '/^$/d' -e 's/[ ()]//g' -e 's/=/,/' day8.txt | awk '
+NR == 1 {split($0,steps,"")} 
+NR != 1 {split($0, t, ","); left[t[1]] = t[2]; right[t[1]] = t[3]} 
+NR != 1 {split($0, t, ","); left[t[1]] = t[2]; right[t[1]] = t[3]; if(t[1] ~ /..A/)curr_steps[t[1]]=t[1]} 
+END {step_count=0;curr_step="AAA";while(curr_step != "ZZZ"){for(s in steps){step_count++;if(steps[s] ~ /L/){curr_step=left[curr_step]} else if(steps[s] ~ /R/){curr_step=right[curr_step]}; if(curr_step == "ZZZ"){print step_count; exit 0}}}}'
+
+
+# part 2
+sed -e '/^$/d' -e 's/[ ()]//g' -e 's/=/,/' day8.txt | awk '
+NR == 1 {split($0,steps,"")} 
+NR != 1 {split($0, t, ","); left[t[1]] = t[2]; right[t[1]] = t[3]; if(t[1] ~ /..A/){curr_steps[t[1]]=t[1];step_counts[t[1]]=0;}} 
+END {while(length(curr_steps) > 0){
+for(s in steps){
+    for(cs in curr_steps){
+        if(curr_steps[cs] ~ /..Z/){
+            print step_counts[cs];
+            delete step_counts[cs];
+            delete curr_steps[cs];
+        } else {
+        step_counts[cs]++}
+    };
+    if(steps[s] ~ /L/){
+        for(cs in curr_steps){
+            curr_steps[cs]=left[curr_steps[cs]]
+        }
+    } else if(steps[s] ~ /R/){
+        for(cs in curr_steps){
+            curr_steps[cs]=right[curr_steps[cs]]
+        }}}}}' | 
+python3 -c '
+import sys
+from math import lcm
+print(lcm(*[int(x) for x in sys.stdin.read().rstrip().split("\n")]))
+'
