@@ -1,0 +1,81 @@
+#!/usr/bin/env sh
+
+# part 1
+gawk '
+function is_constant(array){
+    constant=9999999999999999999999;
+    for(i=1;i<=length(array);i++){
+        if(constant != 9999999999999999999999 && array[i] != constant){
+            return 0;
+        } else {
+            constant=array[i];
+        }
+    }
+    return 1;
+}
+
+{
+    delete curr_line;
+    delete last_num;
+    diff_line=1;
+    split($0,curr_line," ");
+    new_value=curr_line[length(curr_line)];
+    while(is_constant(curr_line) == 0){
+        delete new_line; 
+        for(i=1;i<length(curr_line);i++){
+            new_line[i]=curr_line[i+1]-curr_line[i];
+        };
+        last_num[diff_line]=new_line[length(new_line)];
+        diff_line++;
+        
+        delete curr_line;
+        for(k in new_line){
+            curr_line[k] = new_line[k];
+        }
+    }
+    new_diff=0;
+    for(i=length(last_num);0 < i;i--){
+        new_diff += last_num[i];
+    }
+    print new_value + new_diff;
+}' day9.txt | paste --serial -d"+" | bc -s
+
+# part 2
+cat day9.txt | awk '{for(i=NF;0<i;i--)printf "%s ", $i;print ""}' | gawk '
+function is_constant(array){
+    constant=9999999999999999999999;
+    for(i=1;i<=length(array);i++){
+        if(constant != 9999999999999999999999 && array[i] != constant){
+            return 0;
+        } else {
+            constant=array[i];
+        }
+    }
+    return 1;
+}
+
+{
+    delete curr_line;
+    delete last_num;
+    diff_line=1;
+    split($0,curr_line," ");
+    new_value=curr_line[length(curr_line)];
+    while(is_constant(curr_line) == 0){
+        delete new_line; 
+        for(i=1;i<length(curr_line);i++){
+            new_line[i]=curr_line[i+1]-curr_line[i];
+        };
+        last_num[diff_line]=new_line[length(new_line)];
+        diff_line++;
+        
+        delete curr_line;
+        for(k in new_line){
+            curr_line[k] = new_line[k];
+        }
+    }
+    new_diff=0;
+    for(i=length(last_num);0 < i;i--){
+        new_diff += last_num[i];
+    }
+    print new_value + new_diff;
+}' | paste --serial -d"+" | bc -s
