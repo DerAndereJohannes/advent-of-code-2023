@@ -1,0 +1,101 @@
+#!/usr/bin/env sh
+
+# part 1
+gawk '
+function check_below(pos) {
+    new_coords = pos[1]","pos[2]+1;
+    char = map[new_coords];
+    if(char ~ /[|JL]/ && seen[length(seen)-1] != new_coords) {
+        return seen[length(seen)+1] = new_coords;
+    } else {
+        return 0;
+    }
+}
+function check_above(pos) {
+    new_coords = pos[1]","pos[2]-1;
+    char = map[new_coords];
+    if(char ~ /[|7F]/ && seen[length(seen)-1] != new_coords) {
+        return seen[length(seen)+1] = new_coords;
+    } else {
+        return 0;
+    }
+}
+function check_left(pos) {
+    new_coords = pos[1]-1","pos[2];
+    char = map[new_coords];
+    if(char ~ /[-FL]/ && seen[length(seen)-1] != new_coords) {
+        return seen[length(seen)+1] = new_coords;
+    } else {
+        return 0;
+    }
+}
+function check_right(pos) {
+    new_coords = pos[1]+1","pos[2];
+    char = map[new_coords];
+    if(char ~ /[-J7]/ && seen[length(seen)-1] != new_coords) {
+        seen[length(seen)+1] = new_coords;
+        return 1;
+    } else {
+        return 0;
+    }
+}
+function get_n() {
+    split(seen[length(seen)], pos, ",")
+    switch (map[seen[length(seen)]]) {
+        case "S":
+            if(check_below(pos)){return seen[length(seen)]};
+            if(check_above(pos)){return seen[length(seen)]};
+            if(check_left(pos)){return seen[length(seen)]};
+            if(check_right(pos)){return seen[length(seen)]};
+            break;
+        case "|":
+            if(check_below(pos)){return seen[length(seen)]};
+            if(check_above(pos)){return seen[length(seen)]};
+            break;
+        case "L":
+            if(check_above(pos)){return seen[length(seen)]};
+            if(check_right(pos)){return seen[length(seen)]};
+            break;
+        case "-":
+            if(check_left(pos)){return seen[length(seen)]};
+            if(check_right(pos)){return seen[length(seen)]};
+            break;
+        case "J":
+            if(check_above(pos)){return seen[length(seen)]};
+            if(check_left(pos)){return seen[length(seen)]};
+            break;
+        case "7":
+            if(check_below(pos)){return seen[length(seen)]};
+            if(check_left(pos)){return seen[length(seen)]};
+            break;
+        case "F":
+            if(check_below(pos)){return seen[length(seen)]};
+            if(check_right(pos)){return seen[length(seen)]};
+            break;
+    }
+    return 0;
+}
+{
+    split($0, row,""); 
+    for(i=1;i<=length(row);i++){
+        if(row[i] ~ /[S|7LFJ-]/) {
+            if(row[i] == "S") {
+                seen[1] = "-1,-1"
+                seen[2] = i","NR;
+            }
+            map[i","NR] = row[i];
+        }
+    }
+}
+END {
+    n = 1;
+    while(n != seen[2] && n != 0){
+        n = get_n();
+    }
+    print ((length(seen)-1) / 2);
+
+}
+' day10.txt
+
+# part 2
+# not today.
