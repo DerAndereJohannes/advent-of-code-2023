@@ -1,0 +1,110 @@
+#!/usr/bin/env sh
+
+# part 1
+awk '
+function abs(value) {return value < 0 ? -value : value}
+BEGIN {starnum=1;}
+/#/ {
+    row_double[NR] = 0;
+    split($0,cols,"");
+    for(c in cols) {
+        if(cols[c] == "#") {
+            stars[starnum] = c","NR;
+            starnum++;
+            col_double[c] = 0;
+        } else if(!(c in col_double)) {
+            col_double[c] = 1;
+        }
+    }
+}
+
+{
+    rows[NR] = $0;
+    if(!(NR in row_double)) {
+        row_double[NR] = 1;
+    }
+}
+
+END {
+    col_length = length(rows);
+    row_length = length(rows[1]);
+
+    # get new star locations 
+    for (s in stars) {
+        split(stars[s],pos,",");
+        new_pos[1] = 0;
+        for(i=1;i<=pos[1];i++) {
+            new_pos[1] += 1 + col_double[i];
+        }
+        new_pos[2] = 0;
+        for(i=1;i<=pos[2];i++) {
+            new_pos[2] += 1 + row_double[i];
+        }
+        stars[s] = new_pos[1]","new_pos[2];
+    }
+    total_length = 0;
+    for(s1 in stars) {
+        split(stars[s1],s1pos,",")
+        for(s2 in stars) {
+            split(stars[s2],s2pos,",")
+            total_length += abs((s2pos[1] - s1pos[1])) + abs((s2pos[2] - s1pos[2]));
+        }
+    }
+    print total_length / 2;
+}
+' day11.txt
+
+
+# part 2
+awk '
+function abs(value) {return value < 0 ? -value : value}
+BEGIN {starnum=1;}
+/#/ {
+    row_double[NR] = 0;
+    split($0,cols,"");
+    for(c in cols) {
+        if(cols[c] == "#") {
+            stars[starnum] = c","NR;
+            starnum++;
+            col_double[c] = 0;
+        } else if(!(c in col_double)) {
+            col_double[c] = 999999;
+        }
+    }
+}
+
+{
+    rows[NR] = $0;
+    if(!(NR in row_double)) {
+        row_double[NR] = 999999;
+    }
+}
+
+END {
+    col_length = length(rows);
+    row_length = length(rows[1]);
+
+    # get new star locations 
+    for (s in stars) {
+        split(stars[s],pos,",");
+        new_pos[1] = 0;
+        for(i=1;i<=pos[1];i++) {
+            new_pos[1] += 1 + col_double[i];
+        }
+        new_pos[2] = 0;
+        for(i=1;i<=pos[2];i++) {
+            new_pos[2] += 1 + row_double[i];
+        }
+        stars[s] = new_pos[1]","new_pos[2];
+    }
+    total_length = 0;
+    for(s1 in stars) {
+        split(stars[s1],s1pos,",")
+        for(s2 in stars) {
+            split(stars[s2],s2pos,",")
+            total_length += abs((s2pos[1] - s1pos[1])) + abs((s2pos[2] - s1pos[2]));
+        }
+    }
+    print total_length / 2;
+}
+' day11.txt
